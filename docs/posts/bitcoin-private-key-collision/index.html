@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>比特币私钥碰撞器原理说明｜hightbiger 币圈博客</title>
+<meta name="description" content="比特币的地址存在很多丢失的情况,从区块浏览器中我们可以看到，最多的甚至到达了几百亿一个地址 这次改进的方式比较大众化，傻瓜式操作 好累，先丢个下载链接：链接: https://pan.baidu.com/s/1TVGUjLiklG2Pz0OGVQ87BQ?pwd=ecv6 提取码…">
+<link rel="canonical" href="https://wangbiger.com/posts/bitcoin-private-key-collision/">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="author" content="hightbiger">
+<meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)">
+<meta property="og:site_name" content="hightbiger 币圈博客">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="比特币私钥碰撞器原理说明｜hightbiger 币圈博客">
+<meta property="og:description" content="比特币的地址存在很多丢失的情况,从区块浏览器中我们可以看到，最多的甚至到达了几百亿一个地址 这次改进的方式比较大众化，傻瓜式操作 好累，先丢个下载链接：链接: https://pan.baidu.com/s/1TVGUjLiklG2Pz0OGVQ87BQ?pwd=ecv6 提取码…">
+<meta property="og:url" content="https://wangbiger.com/posts/bitcoin-private-key-collision/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@hightbiger">
+<meta name="twitter:creator" content="@hightbiger">
+<meta name="twitter:title" content="比特币私钥碰撞器原理说明｜hightbiger 币圈博客">
+<meta name="twitter:description" content="比特币的地址存在很多丢失的情况,从区块浏览器中我们可以看到，最多的甚至到达了几百亿一个地址 这次改进的方式比较大众化，傻瓜式操作 好累，先丢个下载链接：链接: https://pan.baidu.com/s/1TVGUjLiklG2Pz0OGVQ87BQ?pwd=ecv6 提取码…">
+<meta property="og:image" content="https://wangbiger.com/wp-content/uploads/2025/03/%E5%9B%BE%E7%89%87.png">
+<meta name="twitter:image" content="https://wangbiger.com/wp-content/uploads/2025/03/%E5%9B%BE%E7%89%87.png">
+<link rel="alternate" hreflang="zh-CN" href="https://wangbiger.com/posts/bitcoin-private-key-collision/">
+<link rel="alternate" hreflang="x-default" href="https://wangbiger.com/posts/bitcoin-private-key-collision/">
+<link rel="alternate" type="application/rss+xml" title="hightbiger 币圈博客" href="/feed.xml">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/assets/style.css?v=20261107">
+
+<meta property="article:published_time" content="2025-03-10T19:31:47+08:00">
+<meta property="article:modified_time" content="2025-04-17T16:42:32+08:00">
+<meta property="article:author" content="hightbiger">
+<meta property="article:section" content="技术笔记">
+<meta property="article:tag" content="比特币私钥"><meta property="article:tag" content="破解器"><meta property="article:tag" content="私钥"><meta property="article:tag" content="私钥破解">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://wangbiger.com/#website","url":"https://wangbiger.com/","name":"hightbiger 币圈博客","alternateName":["hightbiger 博客","hightbiger"],"description":"寻找和分享适合自己的个人金融理财和价值变现解决方案","inLanguage":"zh-CN","publisher":{"@id":"https://wangbiger.com/#organization"}},{"@type":"Organization","@id":"https://wangbiger.com/#organization","name":"hightbiger 币圈博客","url":"https://wangbiger.com/","description":"寻找和分享适合自己的个人金融理财和价值变现解决方案","logo":{"@type":"ImageObject","url":"https://wangbiger.com/assets/favicon.svg"}},{"@type":"Person","@id":"https://wangbiger.com/#person","name":"hightbiger","url":"https://wangbiger.com/about/","description":"2011 年开始创业，2015 年开始系统学习 K 线与金融知识，2017 年进入币圈，经历多轮牛熊周期。持续记录比特币周期走势、交易成本优化与加密资产安全。","jobTitle":"个人投资者与内容创作者","knowsAbout":["比特币","加密货币周期","K线技术","交易所手续费与返佣","加密钱包安全","个人理财"],"sameAs":["https://twitter.com/hightbiger","https://www.youtube.com/channel/UCS6f79bKHQoYjD0sz4nOMog/","https://t.me/joinchat/HG8JJBd_fMJDBwQolSs_Kg","https://discord.gg/Cz6pxttuBQ","https://linktr.ee/hightbiger"]},{"@type":"BlogPosting","@id":"https://wangbiger.com/posts/bitcoin-private-key-collision/#article","headline":"比特币私钥碰撞器原理说明","description":"比特币的地址存在很多丢失的情况,从区块浏览器中我们可以看到，最多的甚至到达了几百亿一个地址 这次改进的方式比较大众化，傻瓜式操作 好累，先丢个下载链接：链接: https://pan.baidu.com/s/1TVGUjLiklG2Pz0OGVQ87BQ?pwd=ecv6 提取码…","datePublished":"2025-03-10T19:31:47+08:00","dateModified":"2025-04-17T16:42:32+08:00","author":{"@id":"https://wangbiger.com/#person"},"publisher":{"@id":"https://wangbiger.com/#organization"},"mainEntityOfPage":{"@id":"https://wangbiger.com/posts/bitcoin-private-key-collision/"},"isPartOf":{"@id":"https://wangbiger.com/#website"},"inLanguage":"zh-CN","isAccessibleForFree":true,"wordCount":966,"timeRequired":"PT3M","articleSection":"技术笔记","keywords":["比特币私钥","破解器","私钥","私钥破解"],"about":[{"@type":"Thing","name":"比特币私钥"},{"@type":"Thing","name":"破解器"},{"@type":"Thing","name":"私钥"},{"@type":"Thing","name":"私钥破解"}],"speakable":{"@type":"SpeakableSpecification","cssSelector":[".article-header h1",".article-body > p:first-of-type"]},"image":["https://wangbiger.com/wp-content/uploads/2025/03/%E5%9B%BE%E7%89%87.png"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://wangbiger.com/"},{"@type":"ListItem","position":2,"name":"技术笔记","item":"https://wangbiger.com/categories/tech-notes/"},{"@type":"ListItem","position":3,"name":"比特币私钥碰撞器原理说明","item":"https://wangbiger.com/posts/bitcoin-private-key-collision/"}]}]}</script>
+<script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();</script>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/" aria-label="hightbiger 币圈博客首页">
+      <span class="brand-mark">hightbiger</span>
+      <span class="brand-sub">币圈博客</span>
+    </a>
+    <nav class="nav" id="site-nav" aria-label="主导航"><a href="/">首页</a><a href="/archive/">文章</a><a href="/categories/">分类</a><a href="/tools/">工具箱</a><a href="/about/">关于</a></nav>
+    <div class="header-tools">
+      <a class="icon-btn" href="/search/" aria-label="搜索文章" title="搜索文章">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      </a>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="切换深色模式"></button>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="打开导航">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<main id="main"><nav class="breadcrumb" aria-label="面包屑"><div class="wrap"><ol><li><a href="/">首页</a></li><li><a href="/categories/tech-notes/">技术笔记</a></li><li aria-current="page">比特币私钥碰撞器原理说明</li></ol></div></nav>
+<div class="wrap">
+  <div class="article-layout">
+    <article class="article-main">
+      <header class="article-header">
+        <div class="article-meta"><a class="chip" href="/categories/tech-notes/">技术笔记</a><time datetime="2025-03-10">2025年3月10日</time><span>3 分钟阅读</span><span>约 966 字</span></div>
+        <h1>比特币私钥碰撞器原理说明</h1>
+        <div class="article-meta"><span>作者 <a class="author" href="/about/">hightbiger</a></span><span>更新于 <time datetime="2025-04-17">2025年4月17日</time></span></div>
+      </header>
+      <div class="article-body"><p>比特币的地址存在很多丢失的情况,从区块浏览器中我们可以看到，最多的甚至到达了几百亿一个地址</p>
+<p>这次改进的方式比较大众化，傻瓜式操作</p>
+<p>好累，先丢个下载链接：链接:<a href=" https://pan.baidu.com/s/1TVGUjLiklG2Pz0OGVQ87BQ?pwd=ecv6" target="_blank" rel="noopener noreferrer"> https://pan.baidu.com/s/1TVGUjLiklG2Pz0OGVQ87BQ?pwd=ecv6</a> 提取码: ecv6</p>
+<p>这个版本制作的时候只有50/s的速度，如果要后面改进的每秒五千次以上不限速的版本可以联系hightbiger微信    找了个业内的大牛，花了六万多重新升级了底层的算法和各项优化，应该是目前能做到的最好的了</p>
+<figure><img src="/wp-content/uploads/2025/03/图片.png" alt="比特币私钥碰撞器原理说明" width="848" height="516" loading="lazy" decoding="async"></figure>
+<p>具体的原理说明如下</p>
+<p>以下是比特币私钥碰撞器的技术原理说明：</p>
+<hr/>
+<h3 id="section-1">比特币私钥碰撞器原理说明<a class="anchor" href="#section-1" aria-hidden="true" tabindex="-1"></a></h3>
+<h4 id="section-2">一、核心原理<a class="anchor" href="#section-2" aria-hidden="true" tabindex="-1"></a></h4>
+<p>本工具基于比特币地址生成的数学原理，通过暴力搜索的方式在比特币地址空间中寻找与目标地址匹配的私钥。其核心逻辑遵循以下公式推导：</p>
+<pre><code>私钥 (private key) → 公钥 (public key) → 比特币地址 (address)</code></pre>
+<p>当且仅当：</p>
+<pre><code>address = Hash160(SHA256(public_key)) </code></pre>
+<p>与目标地址匹配时，即完成有效碰撞。</p>
+<h4 id="section-3">二、关键技术组成<a class="anchor" href="#section-3" aria-hidden="true" tabindex="-1"></a></h4>
+<ol><li><strong>椭圆曲线加密 (ECC)</strong></li>
+</ol>
+<ul><li>使用secp256k1曲线：<code>y² = x³ + 7</code></li>
+<li>私钥生成：32字节随机数 <code>k ∈ [1, n-1]</code>，其中 <code>n = FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141</code></li>
+<li>公钥计算：<code>Q = k * G</code>，其中G为生成点</li>
+</ul>
+<ol><li><strong>哈希运算</strong></li>
+</ol>
+<ul><li>SHA-256：对公钥进行首次哈希</li>
+<li>RIPEMD-160：生成160位哈希摘要</li>
+<li>双重SHA-256：用于校验和计算</li>
+</ul>
+<ol><li><strong>地址编码</strong></li>
+</ol>
+<ul><li>Legacy地址（Base58编码）：<br><code>地址 = Base58(0x00 || Hash160 || Checksum)</code></li>
+<li>校验和计算：<code>Checksum = SHA256(SHA256(version + Hash160)).substr(0,4)</code></li>
+</ul>
+<h4 id="section-4">三、碰撞流程<a class="anchor" href="#section-4" aria-hidden="true" tabindex="-1"></a></h4>
+<pre><code>sequenceDiagram
+    participant 用户端
+    participant Worker线程
+    participant 加密模块
+
+    用户端-&gt;&gt;Worker线程: 启动碰撞任务
+    loop 持续生成
+        Worker线程-&gt;&gt;加密模块: 生成随机私钥
+        加密模块-&gt;&gt;加密模块: 计算公钥(Q = k*G)
+        加密模块-&gt;&gt;加密模块: 计算Hash160(SHA256(Q))
+        加密模块-&gt;&gt;加密模块: 生成Legacy地址
+        Worker线程-&gt;&gt;Worker线程: 比对目标地址列表
+        alt 地址匹配
+            Worker线程-&gt;&gt;用户端: 返回匹配结果
+        else 不匹配
+            Worker线程-&gt;&gt;Worker线程: 累计计数
+        end
+    end</code></pre>
+<h4 id="section-5">四、性能优化<a class="anchor" href="#section-5" aria-hidden="true" tabindex="-1"></a></h4>
+<ol><li><strong>Web Worker多线程</strong></li>
+</ol>
+<ul><li>独立线程执行计算任务</li>
+<li>避免阻塞主线程</li>
+</ul>
+<ol><li><strong>动态批处理控制</strong></li>
+</ol>
+<ul><li>每批处理10个私钥</li>
+<li>计算公式控制速度：<br><code>延迟时间 = max( (1000ms * 批处理量) / 目标速度 - 实际耗时, 0 )</code></li>
+<li>示例：当实际处理耗时15ms时：<br><code>理论耗时 = (10/50)*1000 = 200ms 实际延迟 = 200 - 15 = 185ms</code></li>
+</ul>
+<ol><li><strong>内存优化</strong></li>
+</ol>
+<ul><li>使用TypedArray处理二进制数据</li>
+<li>地址列表预加载为Set结构（O(1)查询复杂度）</li>
+</ul>
+<h4 id="section-6">五、安全机制<a class="anchor" href="#section-6" aria-hidden="true" tabindex="-1"></a></h4>
+<ol><li><strong>本地化处理</strong></li>
+</ol>
+<ul><li>所有计算在浏览器端完成</li>
+<li>无网络传输</li>
+</ul>
+<ol><li>私钥生命周期</li>
+</ol>
+<ul><li>仅存在于内存中</li>
+<li>成功匹配后立即清除内存数据</li>
+</ul>
+<ol><li>资源限制</li>
+</ol>
+<ul><li>最大地址数限制：1,000,000</li>
+<li>自动内存回收机制</li>
+</ul>
+<h4 id="section-7">六、技术限制<a class="anchor" href="#section-7" aria-hidden="true" tabindex="-1"></a></h4>
+<ol><li><strong>理论碰撞概率</strong></li>
+</ol>
+<ul><li>比特币私钥空间：2²⁵⁶ ≈ 1.15e77</li>
+<li>每秒50次的碰撞效率：<br><code>年碰撞概率 = 50*60*60*24*365 / 2²⁵⁶ ≈ 4.4e-69</code></li>
+</ul>
+<ol><li><strong>实际应用场景</strong></li>
+</ol>
+<ul><li>仅适用于教学演示</li>
+<li>可用于验证已知地址的私钥</li>
+<li>不适合实际挖矿或破解</li>
+</ul>
+<h4 id="section-8">七、风险提示<a class="anchor" href="#section-8" aria-hidden="true" tabindex="-1"></a></h4>
+<p>本工具演示的暴力破解方式在实际中不可行，比特币网络的安全性基于ECC算法在现有计算能力下的不可逆性。开发者及使用者应严格遵守当地法律法规，仅将本工具用于密码学学习和技术研究。</p>
+<hr/>
+<p>本说明文档适用于v1.2.0及以上版本，技术细节对应Git Commit Hash：<code>a1b2c3d4</code></p></div>
+      <footer class="article-foot">
+        <ul class="tag-list"><li><span>比特币私钥</span></li><li><span>破解器</span></li><li><span>私钥</span></li><li><span>私钥破解</span></li></ul>
+        <div class="author-card">
+  <div class="avatar" aria-hidden="true">h</div>
+  <div>
+    <b>hightbiger</b>
+    <p>2011 年开始创业，2015 年开始系统学习 K 线与金融知识，2017 年进入币圈，经历多轮牛熊周期。持续记录比特币周期走势、交易成本优化与加密资产安全。</p>
+    <div class="links"><a href="https://twitter.com/hightbiger" target="_blank" rel="noopener noreferrer">Twitter / X</a> · <a href="https://www.youtube.com/channel/UCS6f79bKHQoYjD0sz4nOMog/" target="_blank" rel="noopener noreferrer">YouTube</a> · <a href="https://t.me/joinchat/HG8JJBd_fMJDBwQolSs_Kg" target="_blank" rel="noopener noreferrer">Telegram</a> · <a href="/about/">关于作者 →</a></div>
+  </div>
+</div>
+        <div class="notice" style="margin-top:22px">风险提示：本站内容为个人研究、记录与观点分享，不构成任何投资建议。加密货币价格波动剧烈，交易与投资风险极高，请独立判断并自行承担风险。</div>
+        <nav class="prev-next" aria-label="上一篇与下一篇"><a href="/posts/bybit-u-card-guide/"><span>← 上一篇</span><b>出入金怕冻卡？这张免年费的U卡帮你搞定！</b></a><a class="next" href="/posts/trx-private-key-collision-tool/"><span>下一篇 →</span><b>TRX私钥碰撞器说明</b></a></nav>
+        <section class="related"><h2>相关阅读</h2><div class="related-grid"><a href="/posts/trx-private-key-collision-tool/">TRX私钥碰撞器说明<time datetime="2025-03-25">2025年3月25日</time></a><a href="/posts/bitcoin-private-key-bruteforce/">五分钟学会利用电脑空闲时间免费薅一个赚上亿个比特币的机会----每秒五千次以上的比特币私钥暴力破解工具<time datetime="2023-09-07">2023年9月7日</time></a><a href="/posts/world-cup-prediction-market/">有的时候结果出来都还能买的世界杯，有点厉害<time datetime="2026-06-13">2026年6月13日</time></a></div></section>
+      </footer>
+    </article>
+    <aside class="article-side"></aside>
+  </div>
+</div></main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <b>hightbiger</b>
+        <p>寻找和分享适合自己的个人金融理财和价值变现解决方案。记录比特币周期走势分析、交易所手续费与返佣对比、钱包安全实践，以及个人的投资与金融认知笔记。</p>
+      </div>
+      <div class="footer-col">
+        <h3>浏览</h3>
+        <ul>
+          <li><a href="/">首页</a></li>
+          <li><a href="/archive/">文章归档</a></li>
+          <li><a href="/categories/">全部分类</a></li>
+          <li><a href="/tags/">全部标签</a></li>
+          <li><a href="/search/">搜索</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>分类</h3>
+        <ul><li><a href="/categories/periodic-analysis-sharing/">周期性分享 <span class="n">3</span></a></li><li><a href="/categories/exchange-and-tools/">交易所与工具 <span class="n">3</span></a></li><li><a href="/categories/financial-mindset/">金融认知提升 <span class="n">3</span></a></li><li><a href="/categories/wallet-security/">钱包安全性 <span class="n">1</span></a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h3>联系与订阅</h3>
+        <ul><li><a href="https://twitter.com/hightbiger" target="_blank" rel="noopener noreferrer">Twitter / X</a></li><li><a href="https://www.youtube.com/channel/UCS6f79bKHQoYjD0sz4nOMog/" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a href="https://t.me/joinchat/HG8JJBd_fMJDBwQolSs_Kg" target="_blank" rel="noopener noreferrer">Telegram</a></li><li><a href="https://discord.gg/Cz6pxttuBQ" target="_blank" rel="noopener noreferrer">Discord</a></li><li><a href="https://linktr.ee/hightbiger" target="_blank" rel="noopener noreferrer">Linktree</a></li><li><a href="/feed.xml">RSS 订阅</a></li></ul>
+      </div>
+    </div>
+    <p class="disclaimer">风险提示：本站内容为个人研究、记录与观点分享，不构成任何投资建议。加密货币价格波动剧烈，交易与投资风险极高，请独立判断并自行承担风险。</p>
+    <div class="footer-bottom">
+      <span>© 2023–2026 hightbiger · 内容版权归作者所有</span>
+      <span>由 WordPress 备份静态重建 · GitHub Pages 托管</span>
+    </div>
+  </div>
+</footer>
+<script src="/assets/app.js?v=20261107" defer></script>
+</body>
+</html>

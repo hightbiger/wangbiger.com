@@ -1,0 +1,62 @@
+[
+ {
+  "name": "个人随笔",
+  "slug": "essays",
+  "description": ""
+ },
+ {
+  "name": "周期性分享",
+  "slug": "periodic-analysis-sharing",
+  "description": "周期性走势分析报告，包括月报，周报，日报等内容"
+ },
+ {
+  "name": "我的投资列表",
+  "slug": "my-investment-list",
+  "description": "列出我目前投资的一些币种清单，给大家做个参考，不构成任何投资建议！投资有风险，请一定要量力而行。"
+ },
+ {
+  "name": "搭建自己的博客",
+  "slug": "blog-building",
+  "description": ""
+ },
+ {
+  "name": "日分析报告",
+  "slug": "daily-research-report",
+  "description": "当日有走势或者想法的时候"
+ },
+ {
+  "name": "未分类",
+  "slug": "uncategorized",
+  "description": ""
+ },
+ {
+  "name": "每日新闻",
+  "slug": "news",
+  "description": "每日热点新闻等"
+ },
+ {
+  "name": "金融认知提升",
+  "slug": "financial-mindset",
+  "description": "只有认知的突破,才能带来真正的成长"
+ },
+ {
+  "name": "钱包安全性",
+  "slug": "wallet-security",
+  "description": ""
+ },
+ {
+  "name": "周分析报告",
+  "slug": "weekly-analysis-report",
+  "description": "周线级别的想法"
+ },
+ {
+  "name": "基础书籍推荐",
+  "slug": "recommended-basic-books",
+  "description": "我看过的觉得好用或者有学习价值的书单"
+ },
+ {
+  "name": "技术笔记",
+  "slug": "tech-notes",
+  "description": ""
+ }
+]

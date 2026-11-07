@@ -1,0 +1,18 @@
+{
+ "name": "hightbiger 币圈博客",
+ "short_name": "hightbiger",
+ "description": "寻找和分享适合自己的个人金融理财和价值变现解决方案",
+ "start_url": "/",
+ "display": "standalone",
+ "background_color": "#f7f5f0",
+ "theme_color": "#121110",
+ "lang": "zh-CN",
+ "icons": [
+  {
+   "src": "/assets/favicon.svg",
+   "sizes": "any",
+   "type": "image/svg+xml",
+   "purpose": "any"
+  }
+ ]
+}

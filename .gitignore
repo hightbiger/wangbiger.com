@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+build/shots/
+.DS_Store
+Thumbs.db
+desktop.ini
